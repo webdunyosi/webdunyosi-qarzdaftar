@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kirish - Qarz Daftar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234F46E5' d='M19 2H5c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h3.586L12 21.414 15.414 18H19c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm0 14h-4.414L12 18.586 9.414 16H5V4h14v12z'/%3E%3Cpath fill='%234F46E5' d='M7 7h10v2H7zm0 4h7v2H7z'/%3E%3C/svg%3E"
+      type="image/svg+xml"
+    />
+  </head>
+
+  <body class="bg-gray-100">
+    <div class="main-background"></div>
+    <div
+      class="backdrop-blur min-h-screen flex items-center justify-center p-4"
+    >
+      <div
+        class="login-container bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md"
+      >
+        <div class="text-center mb-8">
+          <div class="store-icon inline-block">
+            <i class="fas fa-store text-6xl text-indigo-600 mb-4"></i>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Qarz Daftar</h1>
+          <p class="text-gray-600">
+            Tizimga kirish uchun ma'lumotlaringizni kiriting
+          </p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+          <div class="form-group">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <i class="fas fa-user mr-2"></i>Login
+            </label>
+            <div class="relative">
+              <span
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <i class="fas fa-user text-indigo-500"></i>
+              </span>
+              <input
+                type="text"
+                id="username"
+                required
+                placeholder="Loginingizni kiriting"
+                class="pl-10 py-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <i class="fas fa-lock mr-2"></i>Parol
+            </label>
+            <div class="relative">
+              <span
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <i class="fas fa-lock text-indigo-500"></i>
+              </span>
+              <input
+                type="password"
+                id="password"
+                required
+                placeholder="Parolingizni kiriting"
+                class="pl-10 py-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-500 transition-colors"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="remember-me">
+              <input
+                type="checkbox"
+                id="remember"
+                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label for="remember" class="text-sm text-gray-600"
+                >Meni eslab qol</label
+              >
+            </div>
+          </div>
+
+          <button type="submit" class="submit-button group">
+            <span class="flex items-center justify-center">
+              <i
+                class="fas fa-sign-in-alt mr-2 group-hover:translate-x-1 transition-transform"
+              ></i>
+              Tizimga kirish
+            </span>
+          </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+          <p>Qarz Daftar tizimi © 2025</p>
+        </div>
+      </div>
+    </div>
+    <script src="login.js"></script>
+  </body>
+</html>

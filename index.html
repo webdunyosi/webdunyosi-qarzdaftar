@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kiyim Magazini - Qarz Daftar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234F46E5' d='M19 2H5c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h3.586L12 21.414 15.414 18H19c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm0 14h-4.414L12 18.586 9.414 16H5V4h14v12z'/%3E%3Cpath fill='%234F46E5' d='M7 7h10v2H7zm0 4h7v2H7z'/%3E%3C/svg%3E"
+      type="image/svg+xml"
+    />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+  </head>
+
+  <body>
+    <div class="main-background"></div>
+    <div class="backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header section -->
+        <div class="text-center mb-12 animate-fade-in">
+          <i class="fas fa-store text-5xl mb-4 text-blue-600"></i>
+          <h1 class="text-4xl font-bold text-white mb-2">Kiyim Magazini</h1>
+          <p class="text-gray-200 text-xl">Qarz Daftar Tizimi</p>
+        </div>
+
+        <div class="flex justify-end mb-4">
+          <a
+            href="diagram.html"
+            class="bg-gray-900 text-white px-5 py-2 rounded-full shadow hover:bg-gray-700 transition font-semibold"
+          >
+            <i class="fas fa-chart-line mr-2"></i> Diagrama
+          </a>
+        </div>
+
+        <!-- Stats cards -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up"
+        >
+          <div class="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg">
+            <div class="flex items-center">
+              <i class="fas fa-users text-3xl text-blue-500 mr-4"></i>
+              <div>
+                <h3 class="text-xl font-semibold">Jami mijozlar</h3>
+                <p id="totalCustomers" class="text-2xl font-bold text-blue-600">
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg">
+            <div class="flex items-center">
+              <i
+                class="fas fa-money-bill-wave text-3xl text-green-500 mr-4"
+              ></i>
+              <div>
+                <h3 class="text-xl font-semibold">Jami qarzlar</h3>
+                <p id="totalDebt" class="text-2xl font-bold text-green-600">
+                  0 so'm
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg">
+            <div class="flex items-center">
+              <i class="fas fa-clock text-3xl text-red-500 mr-4"></i>
+              <div>
+                <h3 class="text-xl font-semibold">Muddati o'tgan</h3>
+                <p id="overdueDebts" class="text-2xl font-bold text-red-600">
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yangi qarz qo'shish formasi -->
+        <div
+          class="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg mb-8 animate-slide-up"
+        >
+          <div class="flex items-center mb-4">
+            <i class="fas fa-plus-circle text-2xl text-blue-500 mr-3"></i>
+            <h2 class="text-xl font-semibold">Yangi Qarz Qo'shish</h2>
+          </div>
+          <form id="qarzForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-user mr-2"></i>Mijoz ismi
+                </label>
+                <input
+                  class="w-full p-2 rounded-full px-4"
+                  type="text"
+                  id="mijozIsmi"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-phone mr-2"></i>Telefon raqami
+                </label>
+                <input
+                  class="w-full p-2 rounded-full px-4"
+                  type="tel"
+                  id="telefon"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-tshirt mr-2"></i>Mahsulot nomi
+                </label>
+                <select
+                  class="w-full p-2 rounded-full px-4"
+                  id="mahsulot"
+                  required
+                >
+                  <option value="">Mahsulotni tanlang</option>
+                  <option value="Futbolka">Futbolka</option>
+                  <option value="Shim">Shim</option>
+                  <option value="Krossovka">Krossovka</option>
+                  <option value="Kepka">Kepka</option>
+                  <option value="Kurtka">Kurtka</option>
+                  <option value="Sviter">Sviter</option>
+                  <option value="Jinsi">Jinsi</option>
+                  <option value="Tufli">Tufli</option>
+                  <option value="Ko'ylak">Ko'ylak</option>
+                  <option value="Yengil kiyim">Yengil kiyim</option>
+                  <option value="Sport kiyim">Sport kiyim</option>
+                  <option value="Boshqa">Boshqa</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-money-bill-alt mr-2"></i>Qarz miqdori
+                </label>
+                <input
+                  class="w-full p-2 rounded-full px-4"
+                  type="number"
+                  id="qarzMiqdori"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-calendar mr-2"></i>Sana
+                </label>
+                <input
+                  class="w-full p-2 rounded-full px-4"
+                  type="date"
+                  id="sana"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">
+                  <i class="fas fa-clock mr-2"></i>To'lash muddati
+                </label>
+                <input
+                  class="w-full p-2 rounded-full px-4"
+                  type="date"
+                  id="tolashMuddati"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="submit-button">
+              <i class="fas fa-save mr-2"></i>Qarzni saqlash
+            </button>
+          </form>
+        </div>
+
+        <!-- Qarzlar ro'yxati -->
+        <div
+          class="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg animate-slide-up"
+        >
+          <div
+            class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4"
+          >
+            <div class="flex items-center">
+              <i class="fas fa-list text-2xl text-blue-500 mr-3"></i>
+              <h2 class="text-xl font-semibold">Qarzlar Ro'yxati</h2>
+            </div>
+            <div
+              class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            >
+              <div class="search-box w-full sm:w-auto">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Qidiruv..."
+                  class="search-input"
+                />
+              </div>
+              <button
+                onclick="exportToExcel()"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center w-full sm:w-auto justify-center"
+              >
+                <i class="fas fa-file-excel mr-2"></i>
+                Excelga export
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50/50">
+                <tr>
+                  <th class="table-header">Mijoz</th>
+                  <th class="table-header">Telefon</th>
+                  <th class="table-header">Mahsulot</th>
+                  <th class="table-header">Qarz miqdori</th>
+                  <th class="table-header">Sana</th>
+                  <th class="table-header">To'lash muddati</th>
+                  <th class="table-header">Amallar</th>
+                </tr>
+              </thead>
+              <tbody
+                id="qarzlarRoyxati"
+                class="bg-white/50 divide-y divide-gray-200"
+              >
+                <!-- JavaScript orqali to'ldiriladi -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

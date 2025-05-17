@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qarzlar Diagrammasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      html,
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: 100%;
+        min-height: 100vh;
+        background: linear-gradient(120deg, #232526 0%, #414345 100%),
+          url("https://www.transparenttextures.com/patterns/stardust.png");
+        background-size: cover;
+        background-repeat: repeat;
+        position: relative;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.7;
+        background: linear-gradient(
+          270deg,
+          #6366f1 0%,
+          #818cf8 25%,
+          #f472b6 50%,
+          #34d399 75%,
+          #6366f1 100%
+        );
+        background-size: 400% 400%;
+        filter: blur(60px) brightness(0.8);
+        animation: gradientMove 18s ease-in-out infinite;
+      }
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .chart-container {
+        background: rgba(24, 24, 27, 0.7);
+        border-radius: 2rem;
+        box-shadow: 0 8px 40px 0 #000a, 0 1.5px 8px 0 #6366f1cc;
+        padding: 2.5rem 2rem 2rem 2rem;
+        max-width: 800px;
+        margin: 4rem auto 2rem auto;
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        border: 1.5px solid rgba(99, 102, 241, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+      .chart-title {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.01em;
+      }
+      .chart-desc {
+        color: #c7d2fe;
+        font-size: 1.1rem;
+        margin-bottom: 2.2rem;
+        font-weight: 500;
+      }
+      .chart-container::before {
+        content: "";
+        position: absolute;
+        top: -60px;
+        left: -60px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, #6366f1cc 0%, transparent 70%);
+        z-index: 0;
+        filter: blur(30px);
+      }
+      .chart-container::after {
+        content: "";
+        position: absolute;
+        bottom: -60px;
+        right: -60px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, #818cf8bb 0%, transparent 70%);
+        z-index: 0;
+        filter: blur(30px);
+      }
+      .chart-content {
+        position: relative;
+        z-index: 1;
+      }
+      #qarzChart {
+        width: 100% !important;
+        max-width: 100vw;
+        height: 380px !important;
+        min-height: 260px;
+        display: block;
+        margin-bottom: 1.2rem;
+      }
+      @media (max-width: 900px) {
+        .chart-container {
+          max-width: 98vw;
+          padding: 1.5rem 0.7rem 1.2rem 0.7rem;
+          border-radius: 1.3rem;
+        }
+        .chart-title {
+          font-size: 1.3rem;
+        }
+        .chart-desc {
+          font-size: 1rem;
+          margin-bottom: 1.1rem;
+        }
+        #qarzChart {
+          height: 320px !important;
+          min-height: 200px;
+          margin-bottom: 0.7rem;
+        }
+      }
+      @media (max-width: 640px) {
+        .chart-container {
+          padding: 0.7rem 0.2rem 0.7rem 0.2rem;
+          max-width: 98vw;
+          margin: 0.7rem auto 0.7rem auto;
+          border-radius: 1rem;
+          box-shadow: 0 2px 8px 0 #0004, 0 1px 2px 0 #6366f1aa;
+          background: rgba(24, 24, 27, 0.85);
+        }
+        .chart-title {
+          font-size: 1.1rem;
+          word-break: break-word;
+          font-weight: 700;
+          margin-bottom: 0.3rem;
+        }
+        .chart-desc {
+          font-size: 0.93rem;
+          word-break: break-word;
+          margin-bottom: 0.7rem;
+        }
+        #qarzChart {
+          width: 100% !important;
+          max-width: 100vw;
+          height: 300px !important;
+          min-height: 180px;
+          display: block;
+          margin-bottom: 0.5rem;
+        }
+        body::before {
+          opacity: 0.25;
+          filter: blur(12px) brightness(0.98);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chart-container">
+      <div class="chart-content">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-chart-line text-2xl text-indigo-400 mr-3"></i>
+          <span class="chart-title">Qarzlar Statistikasi</span>
+        </div>
+        <div class="chart-desc">
+          Tovarlar bo'yicha kunlik qo'shilgan qarzlar statistikasi (real-time).
+        </div>
+        <canvas id="qarzChart" height="120"></canvas>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <a
+        href="index.html"
+        class="text-indigo-300 hover:underline text-lg font-semibold"
+        >← Asosiy sahifaga qaytish</a
+      >
+    </div>
+    <script>
+      // LocalStorage'dan qarzlar ro'yxatini olish (index.html bilan mos)
+      function getQarzlar() {
+        try {
+          return JSON.parse(localStorage.getItem("qarzlar")) || []
+        } catch {
+          return []
+        }
+      }
+
+      // Haftaning kunlari
+      const labels = [
+        "Dushanba",
+        "Seshanba",
+        "Chorshanba",
+        "Payshanba",
+        "Juma",
+        "Shanba",
+        "Yakshanba",
+      ]
+
+      // Tovarlar bo'yicha kunlik qo'shilganlar statistikasi
+      function getProductStats() {
+        const qarzlar = getQarzlar()
+        // Sana bo'yicha haftalik statistikani hisoblash
+        const weekStats = {}
+        const now = new Date()
+        // Har bir qarz uchun
+        qarzlar.forEach((q) => {
+          const sana = new Date(q.sana)
+          // Faqat shu hafta uchun (yoki barcha uchun, istalgan)
+          const dayIdx = sana.getDay() // 0 - yakshanba, 1 - dushanba ...
+          // Bizda 0 - dushanba, 6 - yakshanba bo'lishi uchun
+          const weekDay = dayIdx === 0 ? 6 : dayIdx - 1
+          const mahsulot = q.mahsulot || "Noma'lum"
+          if (!weekStats[mahsulot]) weekStats[mahsulot] = [0, 0, 0, 0, 0, 0, 0]
+          weekStats[mahsulot][weekDay]++
+        })
+        return weekStats
+      }
+
+      // Gradient chiziq generatori
+      function getGradient(ctx, color1, color2) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300)
+        gradient.addColorStop(0, color1)
+        gradient.addColorStop(1, color2)
+        return gradient
+      }
+
+      let chartAnimated = false
+      function drawChart() {
+        const ctx = document.getElementById("qarzChart").getContext("2d")
+        const stats = getProductStats()
+        const colors = [
+          ["#6366f1", "#818cf8"],
+          ["#f472b6", "#f9a8d4"],
+          ["#34d399", "#6ee7b7"],
+          ["#fbbf24", "#fde68a"],
+          ["#60a5fa", "#a5b4fc"],
+          ["#f87171", "#fca5a5"],
+          ["#a78bfa", "#c4b5fd"],
+        ]
+        let colorIdx = 0
+        const datasets = Object.entries(stats).map(([mahsulot, data]) => {
+          const [c1, c2] = colors[colorIdx % colors.length]
+          colorIdx++
+          return {
+            label: mahsulot,
+            data,
+            borderColor: getGradient(ctx, c1, c2),
+            backgroundColor: "rgba(99,102,241,0.08)",
+            borderWidth: 3,
+            tension: 0.5,
+            pointRadius: 6,
+            pointBackgroundColor: c1,
+            pointBorderColor: "#fff",
+            pointHoverRadius: 10,
+            fill: false,
+            shadowOffsetX: 0,
+            shadowOffsetY: 4,
+            shadowBlur: 10,
+            shadowColor: c1,
+          }
+        })
+        if (datasets.length === 0) {
+          datasets.push({
+            label: "Demo Mahsulot",
+            data: [1, 2, 3, 2, 1, 0, 1],
+            borderColor: getGradient(ctx, "#6366f1", "#818cf8"),
+            backgroundColor: "rgba(99,102,241,0.08)",
+            borderWidth: 3,
+            tension: 0.5,
+            pointRadius: 6,
+            pointBackgroundColor: "#6366f1",
+            pointBorderColor: "#fff",
+            pointHoverRadius: 10,
+            fill: false,
+          })
+        }
+        if (window.qarzChartInstance) window.qarzChartInstance.destroy()
+        window.qarzChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets,
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: chartAnimated
+              ? false
+              : { duration: 1200, easing: "easeInOutQuart" },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#fff",
+                  font: {
+                    size:
+                      window.innerWidth < 640
+                        ? 11
+                        : window.innerWidth < 900
+                        ? 13
+                        : 16,
+                    weight: "bold",
+                  },
+                  usePointStyle: true,
+                  padding:
+                    window.innerWidth < 640
+                      ? 8
+                      : window.innerWidth < 900
+                      ? 14
+                      : 20,
+                },
+                position: window.innerWidth < 640 ? "bottom" : "top",
+                align: "center",
+                maxHeight: window.innerWidth < 640 ? 40 : undefined,
+              },
+              tooltip: {
+                backgroundColor: "#18181b",
+                titleColor: "#fff",
+                bodyColor: "#fff",
+                borderColor: "#6366f1",
+                borderWidth: 1,
+                padding:
+                  window.innerWidth < 640
+                    ? 8
+                    : window.innerWidth < 900
+                    ? 12
+                    : 16,
+                displayColors: true,
+                bodyFont: {
+                  size:
+                    window.innerWidth < 640
+                      ? 11
+                      : window.innerWidth < 900
+                      ? 13
+                      : 14,
+                },
+                titleFont: {
+                  size:
+                    window.innerWidth < 640
+                      ? 12
+                      : window.innerWidth < 900
+                      ? 14
+                      : 16,
+                },
+                mode: "index",
+                intersect: false,
+                position: "nearest",
+                yAlign: "bottom",
+                xAlign: "center",
+                callbacks: {
+                  label: function (context) {
+                    return ` ${context.dataset.label}:  ${context.parsed.y} ta`
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#c7d2fe",
+                  font: {
+                    size:
+                      window.innerWidth < 640
+                        ? 9
+                        : window.innerWidth < 900
+                        ? 12
+                        : 15,
+                  },
+                },
+                grid: { color: "rgba(255,255,255,0.05)" },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  color: "#c7d2fe",
+                  font: {
+                    size:
+                      window.innerWidth < 640
+                        ? 9
+                        : window.innerWidth < 900
+                        ? 12
+                        : 15,
+                  },
+                },
+                grid: { color: "rgba(255,255,255,0.08)" },
+              },
+            },
+          },
+        })
+        chartAnimated = true
+      }
+
+      // Real-time yangilash uchun storage event
+      window.addEventListener("storage", function (e) {
+        if (e.key === "qarzlar") drawChart()
+      })
+
+      // Sahifa yuklanganda vaqti-vaqti bilan yangilash
+      drawChart()
+      setInterval(drawChart, 3000)
+    </script>
+  </body>
+</html>
