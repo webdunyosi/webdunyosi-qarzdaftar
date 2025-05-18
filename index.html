@@ -204,14 +204,49 @@
                   class="search-input"
                 />
               </div>
+
               <button
                 onclick="exportToExcel()"
-                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center w-full sm:w-auto justify-center"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center w-full sm:w-auto justify-center transition-all duration-300 hover:shadow-lg"
               >
                 <i class="fas fa-file-excel mr-2"></i>
                 Excelga export
               </button>
             </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button
+              onclick="filterQarzlar('all')"
+              class="filter-btn text-center active flex items-center justify-center sm:justify-start gap-2 px-2 sm:px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 hover:text-white transition-colors"
+              data-filter="all"
+            >
+              <i class="fas fa-list"></i>
+              <span class="hidden sm:inline">Barchasi</span>
+            </button>
+            <button
+              onclick="filterQarzlar('tolangan')"
+              class="filter-btn flex items-center justify-center sm:justify-start gap-2 px-2 sm:px-4 py-2 rounded-full bg-green-500 text-white hover:bg-green-600 hover:text-white transition-colors"
+              data-filter="tolangan"
+            >
+              <i class="fas fa-check"></i>
+              <span class="hidden sm:inline">To'langan</span>
+            </button>
+            <button
+              onclick="filterQarzlar('tolanmagan')"
+              class="filter-btn flex items-center justify-center sm:justify-start gap-2 px-2 sm:px-4 py-2 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 hover:text-white transition-colors"
+              data-filter="tolanmagan"
+            >
+              <i class="fas fa-clock"></i>
+              <span class="hidden sm:inline">To'lanmagan</span>
+            </button>
+            <button
+              onclick="filterQarzlar('muddatiOtgan')"
+              class="filter-btn flex items-center justify-center sm:justify-start gap-2 px-2 sm:px-4 py-2 rounded-full bg-red-500 text-white hover:bg-red-600 hover:text-white transition-colors"
+              data-filter="muddatiOtgan"
+            >
+              <i class="fas fa-exclamation-circle"></i>
+              <span class="hidden sm:inline">Muddati o'tgan</span>
+            </button>
           </div>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">

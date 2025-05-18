@@ -290,7 +290,7 @@ qarzForm.addEventListener("submit", async function (e) {
 })
 
 // Qarzlar ro'yxatini ko'rsatish
-async function qarzlarniKorsatish(searchTerm = "") {
+async function qarzlarniKorsatish(searchTerm = "", filterType = "all") {
   try {
     const snapshot = await db
       .collection("debts")
@@ -303,12 +303,34 @@ async function qarzlarniKorsatish(searchTerm = "") {
 
     qarzlarRoyxati.innerHTML = ""
 
-    const filteredQarzlar = qarzlar.filter(
-      (qarz) =>
+    const filteredQarzlar = qarzlar.filter((qarz) => {
+      // Qidiruv bo'yicha filtrlash
+      const matchesSearch =
         qarz.mijozIsmi.toLowerCase().includes(searchTerm.toLowerCase()) ||
         qarz.telefon.includes(searchTerm) ||
         qarz.mahsulot.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+
+      // Filter turi bo'yicha filtrlash
+      const bugun = new Date()
+      const tolashMuddati = new Date(qarz.tolashMuddati)
+      const muddatiOtgan =
+        bugun > tolashMuddati && qarz.status === "To'lanmagan"
+
+      let matchesFilter = true
+      switch (filterType) {
+        case "tolangan":
+          matchesFilter = qarz.status === "To'langan"
+          break
+        case "tolanmagan":
+          matchesFilter = qarz.status === "To'lanmagan" && !muddatiOtgan
+          break
+        case "muddatiOtgan":
+          matchesFilter = muddatiOtgan
+          break
+      }
+
+      return matchesSearch && matchesFilter
+    })
 
     filteredQarzlar.forEach((qarz) => {
       const tr = document.createElement("tr")
@@ -492,9 +514,23 @@ searchInput.addEventListener("input", (e) => {
   qarzlarniKorsatish(e.target.value)
 })
 
+// Filter funksiyasi
+function filterQarzlar(filterType) {
+  // Active klassini almashtirish
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.classList.remove("active")
+  })
+  document
+    .querySelector(`.filter-btn[data-filter="${filterType}"]`)
+    .classList.add("active")
+
+  // Qarzlarni filterlab ko'rsatish
+  qarzlarniKorsatish(searchInput.value, filterType)
+}
+
 // Sahifa yuklanganda qarzlarni ko'rsatish va statistikani yangilash
 document.addEventListener("DOMContentLoaded", async () => {
-  await qarzlarniKorsatish()
+  await qarzlarniKorsatish("", "all") // Sahifa yuklanganda 'all' filterini qo'llash
   updateStats()
   restoreFormData()
   handleProductSelection()
