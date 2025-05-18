@@ -10,6 +10,9 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
       html,
       body {
@@ -191,14 +194,20 @@
       >
     </div>
     <script>
-      // LocalStorage'dan qarzlar ro'yxatini olish (index.html bilan mos)
-      function getQarzlar() {
-        try {
-          return JSON.parse(localStorage.getItem("qarzlar")) || []
-        } catch {
-          return []
-        }
+      // Firebase konfiguratsiyasi
+      const firebaseConfig = {
+        apiKey: "AIzaSyCdxIPu4uW8olRftrBTbP6S9ZX0g9Pkq7I",
+        authDomain: "qarz-daftar-b6430.firebaseapp.com",
+        projectId: "qarz-daftar-b6430",
+        storageBucket: "qarz-daftar-b6430.firebasestorage.app",
+        messagingSenderId: "770124951619",
+        appId: "1:770124951619:web:797b50a3de864564da24f6",
+        measurementId: "G-94QXFQ24PJ",
       }
+
+      // Firebase-ni ishga tushirish
+      firebase.initializeApp(firebaseConfig)
+      const db = firebase.firestore()
 
       // Haftaning kunlari
       const labels = [
@@ -212,23 +221,35 @@
       ]
 
       // Tovarlar bo'yicha kunlik qo'shilganlar statistikasi
-      function getProductStats() {
-        const qarzlar = getQarzlar()
-        // Sana bo'yicha haftalik statistikani hisoblash
-        const weekStats = {}
-        const now = new Date()
-        // Har bir qarz uchun
-        qarzlar.forEach((q) => {
-          const sana = new Date(q.sana)
-          // Faqat shu hafta uchun (yoki barcha uchun, istalgan)
-          const dayIdx = sana.getDay() // 0 - yakshanba, 1 - dushanba ...
-          // Bizda 0 - dushanba, 6 - yakshanba bo'lishi uchun
-          const weekDay = dayIdx === 0 ? 6 : dayIdx - 1
-          const mahsulot = q.mahsulot || "Noma'lum"
-          if (!weekStats[mahsulot]) weekStats[mahsulot] = [0, 0, 0, 0, 0, 0, 0]
-          weekStats[mahsulot][weekDay]++
-        })
-        return weekStats
+      async function getProductStats() {
+        try {
+          const snapshot = await db.collection("debts").get()
+          const qarzlar = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+
+          // Sana bo'yicha haftalik statistikani hisoblash
+          const weekStats = {}
+          const now = new Date()
+
+          // Har bir qarz uchun
+          qarzlar.forEach((q) => {
+            const sana = new Date(q.sana)
+            // Faqat shu hafta uchun (yoki barcha uchun, istalgan)
+            const dayIdx = sana.getDay() // 0 - yakshanba, 1 - dushanba ...
+            // Bizda 0 - dushanba, 6 - yakshanba bo'lishi uchun
+            const weekDay = dayIdx === 0 ? 6 : dayIdx - 1
+            const mahsulot = q.mahsulot || "Noma'lum"
+            if (!weekStats[mahsulot])
+              weekStats[mahsulot] = [0, 0, 0, 0, 0, 0, 0]
+            weekStats[mahsulot][weekDay]++
+          })
+          return weekStats
+        } catch (error) {
+          console.error("Xatolik yuz berdi:", error)
+          return {}
+        }
       }
 
       // Gradient chiziq generatori
@@ -240,9 +261,9 @@
       }
 
       let chartAnimated = false
-      function drawChart() {
+      async function drawChart() {
         const ctx = document.getElementById("qarzChart").getContext("2d")
-        const stats = getProductStats()
+        const stats = await getProductStats()
         const colors = [
           ["#6366f1", "#818cf8"],
           ["#f472b6", "#f9a8d4"],
@@ -274,6 +295,7 @@
             shadowColor: c1,
           }
         })
+
         if (datasets.length === 0) {
           datasets.push({
             label: "Demo Mahsulot",
@@ -289,6 +311,7 @@
             fill: false,
           })
         }
+
         if (window.qarzChartInstance) window.qarzChartInstance.destroy()
         window.qarzChartInstance = new Chart(ctx, {
           type: "line",
@@ -404,9 +427,9 @@
         chartAnimated = true
       }
 
-      // Real-time yangilash uchun storage event
-      window.addEventListener("storage", function (e) {
-        if (e.key === "qarzlar") drawChart()
+      // Real-time yangilash uchun Firestore listener
+      db.collection("debts").onSnapshot(() => {
+        drawChart()
       })
 
       // Sahifa yuklanganda vaqti-vaqti bilan yangilash
