@@ -76,6 +76,18 @@ const inputFields = {
   tolashMuddati: document.getElementById("tolashMuddati"),
 }
 
+// Raqamlarni formatlash
+function formatNumber(input) {
+  // Faqat raqamlarni qoldirish
+  let value = input.value.replace(/\D/g, "")
+
+  // Har 3 ta raqamdan keyin nuqta qo'yish
+  value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+
+  // Input qiymatini yangilash
+  input.value = value
+}
+
 // Mahsulot tanlash uchun maxsus funksiya
 function handleProductSelection() {
   const mahsulotSelect = inputFields.mahsulot
