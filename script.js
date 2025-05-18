@@ -489,22 +489,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 // Excelga export qilish
-function exportToExcel() {
+async function exportToExcel() {
   // Qarzlar ma'lumotlarini olish
-  const qarzlar = JSON.parse(localStorage.getItem("qarzlar")) || []
+  const qarzlar = await getDebts() // LocalStorage o'rniga Firebase'dan olish
   const bugun = new Date()
 
   // Excel uchun ma'lumotlarni tayyorlash
   const excelData = qarzlar.map((qarz) => {
     const tolashMuddati = new Date(qarz.tolashMuddati)
-    const qolganKunlar = Math.ceil(
-      (tolashMuddati - bugun) / (1000 * 60 * 60 * 24)
-    )
+    const qolganKunlarMs = tolashMuddati - bugun
+    const qolganKunlar = Math.ceil(qolganKunlarMs / (1000 * 60 * 60 * 24))
 
     let qolganKunlarText = ""
     if (qarz.status === "To'langan") {
       qolganKunlarText = "To'langan"
-    } else if (qolganKunlar < 0) {
+    } else if (qolganKunlarMs < 0) {
       qolganKunlarText = `${Math.abs(qolganKunlar)} kun o'tgan`
     } else if (qolganKunlar === 0) {
       qolganKunlarText = "Bugun"
@@ -512,13 +511,21 @@ function exportToExcel() {
       qolganKunlarText = `${qolganKunlar} kun qoldi`
     }
 
+    // Timestamp bo'lsa, Date obyektiga o'tkazish
+    const sana =
+      qarz.sana && qarz.sana.toDate ? qarz.sana.toDate() : new Date(qarz.sana)
+    const tolashMuddatiDate =
+      qarz.tolashMuddati && qarz.tolashMuddati.toDate
+        ? qarz.tolashMuddati.toDate()
+        : new Date(qarz.tolashMuddati)
+
     return {
       "Mijoz ismi": qarz.mijozIsmi,
       Telefon: qarz.telefon,
       Mahsulot: qarz.mahsulot,
       "Qarz miqdori": qarz.qarzMiqdori,
-      Sana: new Date(qarz.sana).toLocaleDateString(),
-      "To'lash muddati": new Date(qarz.tolashMuddati).toLocaleDateString(),
+      Sana: sana.toLocaleDateString(),
+      "To'lash muddati": tolashMuddatiDate.toLocaleDateString(),
       Holati: qarz.status,
       "Qolgan kunlar": qolganKunlarText,
     }
