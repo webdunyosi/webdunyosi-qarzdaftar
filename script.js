@@ -78,13 +78,16 @@ const inputFields = {
 
 // Raqamlarni formatlash
 function formatNumber(input) {
-  // Faqat raqamlarni qoldirish
-  let value = input.value.replace(/\D/g, "")
-
-  // Har 3 ta raqamdan keyin nuqta qo'yish
-  value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-
-  // Input qiymatini yangilash
+  // Allow only digits and a single decimal point
+  let value = input.value.replace(/[^\d.]/g, "")
+  // Ensure only one decimal point
+  const decimalIndex = value.indexOf(".")
+  if (decimalIndex !== -1) {
+    value =
+      value.substring(0, decimalIndex + 1) +
+      value.substring(decimalIndex + 1).replace(/\./g, "")
+  }
+  // Update input value
   input.value = value
 }
 
@@ -251,11 +254,9 @@ qarzForm.addEventListener("submit", async function (e) {
         yangiMalumot.mijozIsmi
       }\n📞 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
         yangiMalumot.mahsulot
-      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toFixed(
-        3
-      )} so'm\n📅 Sana: ${yangiMalumot.sana}\n⏰ To'lash muddati: ${
-        yangiMalumot.tolashMuddati
-      }`
+      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${
+        yangiMalumot.sana
+      }\n⏰ To'lash muddati: ${yangiMalumot.tolashMuddati}`
       sendTelegramMessage(message)
     } else {
       // Yangi qarz qo'shish
@@ -267,11 +268,9 @@ qarzForm.addEventListener("submit", async function (e) {
         yangiMalumot.mijozIsmi
       }\n📞 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
         yangiMalumot.mahsulot
-      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toFixed(
-        3
-      )} so'm\n📅 Sana: ${yangiMalumot.sana}\n⏰ To'lash muddati: ${
-        yangiMalumot.tolashMuddati
-      }`
+      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${
+        yangiMalumot.sana
+      }\n⏰ To'lash muddati: ${yangiMalumot.tolashMuddati}`
       sendTelegramMessage(message)
     }
 
@@ -394,9 +393,7 @@ async function qarzlarniKorsatish(searchTerm = "", filterType = "all") {
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <div class="text-sm text-gray-900">
-            <i class="fas fa-money-bill-alt text-gray-400 mr-2"></i>${qarz.qarzMiqdori.toFixed(
-              3
-            )} so'm
+            <i class="fas fa-money-bill-alt text-gray-400 mr-2"></i>${qarz.qarzMiqdori.toLocaleString()} so'm
           </div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
