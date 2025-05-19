@@ -100,36 +100,33 @@
           </div>
           <form id="qarzForm" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-user mr-2"></i>Mijoz ismi
-                </label>
+              <div class="form-group relative">
                 <input
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="text"
                   id="mijozIsmi"
                   required
                   placeholder="Mijoz ismini kiriting"
                 />
+                <i
+                  class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
               </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-phone mr-2"></i>Telefon raqami
-                </label>
+              <div class="form-group relative">
                 <input
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="tel"
                   id="telefon"
                   required
                   placeholder="Telefon raqamini kiriting"
                 />
+                <i
+                  class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
               </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-tshirt mr-2"></i>Mahsulot nomi
-                </label>
+              <div class="form-group relative">
                 <select
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
                   id="mahsulot"
                   required
                 >
@@ -147,41 +144,47 @@
                   <option value="Sport kiyim">Sport kiyim</option>
                   <option value="Boshqa">Boshqa</option>
                 </select>
+                <i
+                  class="fas fa-tshirt absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
+                <i
+                  class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                ></i>
               </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-money-bill-alt mr-2"></i>Qarz miqdori
-                </label>
+              <div class="form-group relative">
                 <input
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="text"
                   id="qarzMiqdori"
                   oninput="formatNumber(this)"
                   required
                   placeholder="Qarz miqdorini kiriting"
                 />
+                <i
+                  class="fas fa-money-bill-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
               </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-calendar mr-2"></i>Sana
-                </label>
+              <div class="form-group relative">
                 <input
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="date"
                   id="sana"
                   required
                 />
+                <i
+                  class="fas fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
               </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700">
-                  <i class="fas fa-clock mr-2"></i>To'lash muddati
-                </label>
+              <div class="form-group relative">
                 <input
-                  class="w-full p-2 rounded-full px-4"
+                  class="w-full p-2 rounded-full px-4 pl-10 bg-white/90 focus:bg-white transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="date"
                   id="tolashMuddati"
                   required
                 />
+                <i
+                  class="fas fa-clock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                ></i>
               </div>
             </div>
             <button
