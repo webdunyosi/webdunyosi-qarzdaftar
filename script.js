@@ -249,13 +249,13 @@ qarzForm.addEventListener("submit", async function (e) {
       // Telegram xabari
       const message = `🔄 <b>Qarz yangilandi</b>\n\n👤 Mijoz: ${
         yangiMalumot.mijozIsmi
-      }\n📱 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
+      }\n📞 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
         yangiMalumot.mahsulot
-      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${new Date(
-        yangiMalumot.sana
-      ).toLocaleDateString()}\n⏰ To'lash muddati: ${new Date(
+      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toFixed(
+        3
+      )} so'm\n📅 Sana: ${yangiMalumot.sana}\n⏰ To'lash muddati: ${
         yangiMalumot.tolashMuddati
-      ).toLocaleDateString()}`
+      }`
       sendTelegramMessage(message)
     } else {
       // Yangi qarz qo'shish
@@ -263,15 +263,15 @@ qarzForm.addEventListener("submit", async function (e) {
       alert("Yangi qarz muvaffaqiyatli qo'shildi!")
 
       // Telegram xabari
-      const message = `➕ <b>Yangi qarz qo'shildi</b>\n\n👤 Mijoz: ${
+      const message = `✅ <b>Yangi qarz qo'shildi</b>\n\n👤 Mijoz: ${
         yangiMalumot.mijozIsmi
-      }\n📱 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
+      }\n📞 Telefon: ${yangiMalumot.telefon}\n👕 Mahsulot: ${
         yangiMalumot.mahsulot
-      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${new Date(
-        yangiMalumot.sana
-      ).toLocaleDateString()}\n⏰ To'lash muddati: ${new Date(
+      }\n💰 Qarz miqdori: ${yangiMalumot.qarzMiqdori.toFixed(
+        3
+      )} so'm\n📅 Sana: ${yangiMalumot.sana}\n⏰ To'lash muddati: ${
         yangiMalumot.tolashMuddati
-      ).toLocaleDateString()}`
+      }`
       sendTelegramMessage(message)
     }
 
@@ -394,7 +394,9 @@ async function qarzlarniKorsatish(searchTerm = "", filterType = "all") {
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <div class="text-sm text-gray-900">
-            <i class="fas fa-money-bill-alt text-gray-400 mr-2"></i>${qarz.qarzMiqdori.toLocaleString()} so'm
+            <i class="fas fa-money-bill-alt text-gray-400 mr-2"></i>${qarz.qarzMiqdori.toFixed(
+              3
+            )} so'm
           </div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
@@ -466,7 +468,7 @@ async function qarzniTolash(id) {
     const qarz = doc.data()
     const message = `✅ <b>Qarz to'landi</b>\n\n👤 Mijoz: ${
       qarz.mijozIsmi
-    }\n📱 Telefon: ${qarz.telefon}\n👕 Mahsulot: ${
+    }\n📞 Telefon: ${qarz.telefon}\n👕 Mahsulot: ${
       qarz.mahsulot
     }\n💰 Qarz miqdori: ${qarz.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${new Date(
       qarz.sana
@@ -494,7 +496,7 @@ async function qarzniOchirish(id) {
       // Telegram xabari
       const message = `❌ <b>Qarz o'chirildi</b>\n\n👤 Mijoz: ${
         qarz.mijozIsmi
-      }\n📱 Telefon: ${qarz.telefon}\n👕 Mahsulot: ${
+      }\n📞 Telefon: ${qarz.telefon}\n👕 Mahsulot: ${
         qarz.mahsulot
       }\n💰 Qarz miqdori: ${qarz.qarzMiqdori.toLocaleString()} so'm\n📅 Sana: ${new Date(
         qarz.sana
@@ -622,8 +624,18 @@ async function addDebt(debt) {
       ...debt,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     })
+    // Telegram xabari
+    const message = `✅ <b>Yangi qarz qo'shildi</b>\n\n👤 Mijoz: ${
+      debt.mijozIsmi
+    }\n📞 Telefon: ${debt.telefon}\n👕 Mahsulot: ${
+      debt.mahsulot
+    }\n💰 Qarz miqdori: ${debt.qarzMiqdori.toFixed(3)} so'm\n📅 Sana: ${
+      debt.sana
+    }\n⏰ To'lash muddati: ${debt.tolashMuddati}`
+    sendTelegramMessage(message)
   } catch (error) {
-    console.error("Xatolik yuz berdi: ", error)
+    console.error("Qarz qo'shishda xatolik:", error)
+    alert("Qarz qo'shishda xatolik yuz berdi.")
   }
 }
 
