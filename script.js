@@ -555,57 +555,91 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Excelga export qilish
 async function exportToExcel() {
-  // Qarzlar ma'lumotlarini olish
-  const qarzlar = await getDebts() // LocalStorage o'rniga Firebase'dan olish
-  const bugun = new Date()
+  try {
+    // Qarzlar ma'lumotlarini olish
+    const qarzlar = await getDebts()
+    const bugun = new Date()
 
-  // Excel uchun ma'lumotlarni tayyorlash
-  const excelData = qarzlar.map((qarz) => {
-    const tolashMuddati = new Date(qarz.tolashMuddati)
-    const qolganKunlarMs = tolashMuddati - bugun
-    const qolganKunlar = Math.ceil(qolganKunlarMs / (1000 * 60 * 60 * 24))
+    // Excel uchun ma'lumotlarni tayyorlash
+    const excelData = qarzlar.map((qarz) => {
+      const tolashMuddati = new Date(qarz.tolashMuddati)
+      const qolganKunlarMs = tolashMuddati - bugun
+      const qolganKunlar = Math.ceil(qolganKunlarMs / (1000 * 60 * 60 * 24))
 
-    let qolganKunlarText = ""
-    if (qarz.status === "To'langan") {
-      qolganKunlarText = "To'langan"
-    } else if (qolganKunlarMs < 0) {
-      qolganKunlarText = `${Math.abs(qolganKunlar)} kun o'tgan`
-    } else if (qolganKunlar === 0) {
-      qolganKunlarText = "Bugun"
-    } else {
-      qolganKunlarText = `${qolganKunlar} kun qoldi`
+      let qolganKunlarText = ""
+      if (qarz.status === "To'langan") {
+        qolganKunlarText = "To'langan"
+      } else if (qolganKunlarMs < 0) {
+        qolganKunlarText = `${Math.abs(qolganKunlar)} kun o'tgan`
+      } else if (qolganKunlar === 0) {
+        qolganKunlarText = "Bugun"
+      } else {
+        qolganKunlarText = `${qolganKunlar} kun qoldi`
+      }
+
+      // Timestamp bo'lsa, Date obyektiga o'tkazish
+      const sana =
+        qarz.sana && qarz.sana.toDate ? qarz.sana.toDate() : new Date(qarz.sana)
+      const tolashMuddatiDate =
+        qarz.tolashMuddati && qarz.tolashMuddati.toDate
+          ? qarz.tolashMuddati.toDate()
+          : new Date(qarz.tolashMuddati)
+
+      return {
+        "Mijoz ismi": qarz.mijozIsmi,
+        Telefon: qarz.telefon,
+        Mahsulot: qarz.mahsulot,
+        "Qarz miqdori": qarz.qarzMiqdori,
+        Sana: sana.toLocaleDateString(),
+        "To'lash muddati": tolashMuddatiDate.toLocaleDateString(),
+        Holati: qarz.status,
+        "Qolgan kunlar": qolganKunlarText,
+      }
+    })
+
+    // Worksheet yaratish
+    const ws = XLSX.utils.json_to_sheet(excelData)
+
+    // Workbook yaratish
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, "Qarzlar")
+
+    // Excel faylini base64 formatiga o'tkazish
+    const excelBase64 = XLSX.write(wb, { bookType: "xlsx", type: "base64" })
+
+    // Telegramga xabar yuborish
+    const message = `📊 <b>Qarzlar ro'yxati</b>\n\nExcel fayl yuborilmoqda...`
+    await sendTelegramMessage(message)
+
+    // Excel faylini Telegram orqali yuborish
+    const formData = new FormData()
+    formData.append("chat_id", TELEGRAM_CHAT_ID)
+    formData.append(
+      "document",
+      new Blob([Uint8Array.from(atob(excelBase64), (c) => c.charCodeAt(0))], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      }),
+      `Qarzlar_${new Date().toLocaleDateString()}.xlsx`
+    )
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error("Excel fayl yuborishda xatolik yuz berdi")
     }
 
-    // Timestamp bo'lsa, Date obyektiga o'tkazish
-    const sana =
-      qarz.sana && qarz.sana.toDate ? qarz.sana.toDate() : new Date(qarz.sana)
-    const tolashMuddatiDate =
-      qarz.tolashMuddati && qarz.tolashMuddati.toDate
-        ? qarz.tolashMuddati.toDate()
-        : new Date(qarz.tolashMuddati)
-
-    return {
-      "Mijoz ismi": qarz.mijozIsmi,
-      Telefon: qarz.telefon,
-      Mahsulot: qarz.mahsulot,
-      "Qarz miqdori": qarz.qarzMiqdori,
-      Sana: sana.toLocaleDateString(),
-      "To'lash muddati": tolashMuddatiDate.toLocaleDateString(),
-      Holati: qarz.status,
-      "Qolgan kunlar": qolganKunlarText,
-    }
-  })
-
-  // Worksheet yaratish
-  const ws = XLSX.utils.json_to_sheet(excelData)
-
-  // Workbook yaratish
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, "Qarzlar")
-
-  // Excel faylini yuklab olish
-  const fileName = `Qarzlar_${new Date().toLocaleDateString()}.xlsx`
-  XLSX.writeFile(wb, fileName)
+    // Muvaffaqiyatli yuborilgan xabari
+    await sendTelegramMessage("✅ Excel fayl muvaffaqiyatli yuborildi!")
+  } catch (error) {
+    console.error("Xatolik yuz berdi:", error)
+    await sendTelegramMessage("❌ Excel fayl yuborishda xatolik yuz berdi!")
+  }
 }
 
 // Firebase konfiguratsiyasi
