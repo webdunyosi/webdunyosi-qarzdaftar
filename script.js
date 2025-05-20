@@ -801,6 +801,12 @@ async function exportToExcel() {
     // Excel faylini base64 formatiga o'tkazish
     const excelBase64 = XLSX.write(wb, { bookType: "xlsx", type: "base64" })
 
+    // Joriy sana va vaqtni olish
+    const now = new Date()
+    const dateStr = now.toLocaleDateString("uz-UZ").replace(/\./g, "-")
+    const timeStr = now.toLocaleTimeString("uz-UZ").replace(/:/g, "-")
+    const fileName = `Qarzlar_${dateStr}_${timeStr}.xlsx`
+
     // Telegramga xabar yuborish
     const message = `📊 <b>Qarzlar ro'yxati</b>\n\nExcel fayl yuborilmoqda...`
     await sendTelegramMessage(message)
@@ -813,7 +819,7 @@ async function exportToExcel() {
       new Blob([Uint8Array.from(atob(excelBase64), (c) => c.charCodeAt(0))], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       }),
-      `Qarzlar_${new Date().toLocaleDateString()}.xlsx`
+      fileName
     )
 
     const response = await fetch(
