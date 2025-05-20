@@ -545,12 +545,56 @@ function filterQarzlar(filterType) {
   qarzlarniKorsatish(searchInput.value, filterType)
 }
 
-// Sahifa yuklanganda qarzlarni ko'rsatish va statistikani yangilash
+// Har kuni soat 7:10 da Excel faylini yuborish
+function scheduleDailyExcelReport() {
+  // Keyingi 7:10 ni hisoblash
+  function getNextReportTime() {
+    const now = new Date()
+    const reportTime = new Date(now)
+    reportTime.setHours(7, 10, 0, 0) // 7:10 AM
+
+    // Agar hozirgi vaqt 7:10 dan keyin bo'lsa, keyingi kunga o'tkazish
+    if (now > reportTime) {
+      reportTime.setDate(reportTime.getDate() + 1)
+    }
+
+    return reportTime
+  }
+
+  // Keyingi yuborish vaqtigacha qolgan vaqtni hisoblash
+  function getTimeUntilNextReport() {
+    const nextReport = getNextReportTime()
+    const now = new Date()
+    return nextReport - now
+  }
+
+  // Avtomatik yuborishni boshlash
+  function startAutoReport() {
+    const timeUntilNext = getTimeUntilNextReport()
+
+    // Keyingi yuborish vaqtigacha kutish
+    setTimeout(() => {
+      // Excel faylini yuborish
+      exportToExcel()
+
+      // Keyingi yuborishni rejalashtirish
+      startAutoReport()
+    }, timeUntilNext)
+  }
+
+  // Avtomatik yuborishni boshlash
+  startAutoReport()
+}
+
+// Sahifa yuklanganda avtomatik yuborishni boshlash
 document.addEventListener("DOMContentLoaded", async () => {
-  await qarzlarniKorsatish("", "all") // Sahifa yuklanganda 'all' filterini qo'llash
+  await qarzlarniKorsatish("", "all")
   updateStats()
   restoreFormData()
   handleProductSelection()
+
+  // Avtomatik yuborishni boshlash
+  scheduleDailyExcelReport()
 })
 
 // Excelga export qilish
