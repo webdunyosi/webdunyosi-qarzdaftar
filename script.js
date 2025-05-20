@@ -300,6 +300,114 @@ qarzForm.addEventListener("submit", async function (e) {
   }
 })
 
+// Sana bo'yicha filterlash
+let currentDateFilter = "all"
+let customDateRange = {
+  start: null,
+  end: null,
+}
+
+// Kalendarni ochish/yopish
+function toggleDatePicker(e) {
+  if (e) {
+    e.stopPropagation() // Eventni to'xtatish
+  }
+  const datePicker = document.getElementById("datePicker")
+  datePicker.classList.toggle("hidden")
+
+  // Animatsiya uchun
+  if (!datePicker.classList.contains("hidden")) {
+    datePicker.style.transform = "scale(0.95)"
+    setTimeout(() => {
+      datePicker.style.transform = "scale(1)"
+    }, 10)
+  }
+}
+
+// Kalendardan tashqariga bosilganda yopish
+document.addEventListener("click", (e) => {
+  const datePicker = document.getElementById("datePicker")
+  const dateFilterBtn = document.querySelector(".date-filter-btn")
+
+  if (!datePicker.contains(e.target) && !dateFilterBtn.contains(e.target)) {
+    datePicker.classList.add("hidden")
+  }
+})
+
+// Maxsus vaqt tanlash
+function filterByDate(filterType, e) {
+  if (e) {
+    e.stopPropagation() // Eventni to'xtatish
+  }
+
+  currentDateFilter = filterType
+
+  // Active klassini almashtirish
+  document.querySelectorAll(".date-filter-btn").forEach((btn) => {
+    btn.classList.remove("bg-blue-600", "text-white")
+    btn.classList.add("bg-blue-100", "text-blue-600")
+  })
+
+  // Tanlangan tugmani belgilash
+  const selectedBtn = document.querySelector(
+    `.date-filter-btn[onclick="filterByDate('${filterType}')"]`
+  )
+  if (selectedBtn) {
+    selectedBtn.classList.remove("bg-blue-100", "text-blue-600")
+    selectedBtn.classList.add("bg-blue-600", "text-white")
+  }
+
+  // Maxsus vaqt tanlash
+  const customDateRange = document.getElementById("customDateRange")
+  if (filterType === "custom") {
+    customDateRange.classList.remove("hidden")
+    // Animatsiya
+    customDateRange.style.opacity = "0"
+    customDateRange.style.transform = "translateY(-10px)"
+    setTimeout(() => {
+      customDateRange.style.opacity = "1"
+      customDateRange.style.transform = "translateY(0)"
+    }, 10)
+  } else {
+    customDateRange.classList.add("hidden")
+  }
+
+  // Qarzlarni filterlab ko'rsatish
+  qarzlarniKorsatish(
+    searchInput.value,
+    document.querySelector(".filter-btn.active").dataset.filter
+  )
+}
+
+// Maxsus vaqtni qo'llash
+function applyCustomDateFilter(e) {
+  if (e) {
+    e.stopPropagation() // Eventni to'xtatish
+  }
+
+  const startDate = document.getElementById("startDate").value
+  const endDate = document.getElementById("endDate").value
+
+  if (!startDate || !endDate) {
+    alert("Iltimos, boshlang'ich va tugash sanalarini tanlang!")
+    return
+  }
+
+  customDateRange.start = new Date(startDate)
+  customDateRange.end = new Date(endDate)
+  customDateRange.end.setHours(23, 59, 59, 999) // Kun oxirigacha
+
+  // Qarzlarni filterlab ko'rsatish
+  qarzlarniKorsatish(
+    searchInput.value,
+    document.querySelector(".filter-btn.active").dataset.filter
+  )
+
+  // Kalendarni yopish
+  const datePicker = document.getElementById("datePicker")
+  datePicker.classList.add("hidden")
+}
+
 // Qarzlar ro'yxatini ko'rsatish
 async function qarzlarniKorsatish(searchTerm = "", filterType = "all") {
   try {
@@ -340,7 +448,49 @@ async function qarzlarniKorsatish(searchTerm = "", filterType = "all") {
           break
       }
 
-      return matchesSearch && matchesFilter
+      // Sana bo'yicha filtrlash
+      const qarzSana = new Date(qarz.sana)
+      const currentDate = new Date()
+      currentDate.setHours(0, 0, 0, 0)
+
+      let matchesDate = true
+      switch (currentDateFilter) {
+        case "today":
+          const todayStart = new Date(currentDate)
+          const tomorrowStart = new Date(todayStart)
+          tomorrowStart.setDate(todayStart.getDate() + 1)
+          matchesDate = qarzSana >= todayStart && qarzSana < tomorrowStart
+          break
+        case "week":
+          const weekStart = new Date(currentDate)
+          weekStart.setDate(currentDate.getDate() - currentDate.getDay())
+          const nextWeekStart = new Date(weekStart)
+          nextWeekStart.setDate(weekStart.getDate() + 7)
+          matchesDate = qarzSana >= weekStart && qarzSana < nextWeekStart
+          break
+        case "month":
+          const monthStart = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            1
+          )
+          const nextMonthStart = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
+            1
+          )
+          matchesDate = qarzSana >= monthStart && qarzSana < nextMonthStart
+          break
+        case "custom":
+          if (customDateRange.start && customDateRange.end) {
+            matchesDate =
+              qarzSana >= customDateRange.start &&
+              qarzSana <= customDateRange.end
+          }
+          break
+      }
+
+      return matchesSearch && matchesFilter && matchesDate
     })
 
     filteredQarzlar.forEach((qarz) => {

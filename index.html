@@ -256,8 +256,101 @@
                   <th class="table-header whitespace-nowrap">Telefon</th>
                   <th class="table-header whitespace-nowrap">Mahsulot</th>
                   <th class="table-header whitespace-nowrap">Qarz miqdori</th>
-                  <th class="table-header whitespace-nowrap">Sana</th>
-                    <th class="table-header whitespace-nowrap">To'lash muddati</th>
+                  <th class="table-header whitespace-nowrap relative">
+                    <div class="flex items-center justify-between">
+                      <span>Sana</span>
+                      <button
+                        type="button"
+                        onclick="toggleDatePicker()"
+                        class="date-filter-btn text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                      >
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                    <!-- Kalendar dropdown -->
+                    <div
+                      id="datePicker"
+                      class="hidden absolute z-50 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl p-4 transform origin-top-right transition-all duration-200 ease-out"
+                    >
+                      <div class="space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onclick="filterByDate('today')"
+                            class="date-filter-btn w-full text-left px-4 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                          >
+                            <i class="fas fa-calendar-day mr-2"></i>Bugun
+                          </button>
+                          <button
+                            type="button"
+                            onclick="filterByDate('week')"
+                            class="date-filter-btn w-full text-left px-4 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                          >
+                            <i class="fas fa-calendar-week mr-2"></i>Bu hafta
+                          </button>
+                          <button
+                            type="button"
+                            onclick="filterByDate('month')"
+                            class="date-filter-btn w-full text-left px-4 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                          >
+                            <i class="fas fa-calendar mr-2"></i>Bu oy
+                          </button>
+                          <button
+                            type="button"
+                            onclick="filterByDate('custom')"
+                            class="date-filter-btn w-full text-left px-4 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                          >
+                            <i class="fas fa-calendar-plus mr-2"></i>Maxsus vaqt
+                          </button>
+                        </div>
+                        <div
+                          id="customDateRange"
+                          class="hidden space-y-3 mt-3 p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div>
+                            <label
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                              >Boshlang'ich sana</label
+                            >
+                            <input
+                              type="date"
+                              id="startDate"
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                              >Tugash sanasi</label
+                            >
+                            <input
+                              type="date"
+                              id="endDate"
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onclick="applyCustomDateFilter()"
+                            class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center"
+                          >
+                            <i class="fas fa-check mr-2"></i>Qo'llash
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onclick="filterByDate('all')"
+                          class="date-filter-btn w-full text-left px-4 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                        >
+                          <i class="fas fa-times mr-2"></i>Filterni olib
+                          tashlash
+                        </button>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="table-header whitespace-nowrap">
+                    To'lash muddati
+                  </th>
                   <th class="table-header whitespace-nowrap">Amallar</th>
                 </tr>
               </thead>
